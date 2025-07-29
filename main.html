@@ -972,7 +972,7 @@ function renderComment(comments) {
   let visibleComments = Object.entries(comments)
     .filter(([_, comment]) => comment && comment.trim() !== '')
     .map(([dept, comment]) => {
-      return `<p style="font-size: 20px;">${dept.toUpperCase()}: ${comment}</p>`;
+      return `<p style="font-size: 15px;"><strong>${dept.toUpperCase()}:</strong> ${comment}</p>`;
     });
 
   if (visibleComments.length === 0) return '';
@@ -1056,9 +1056,9 @@ async function loadMemos() {
         div.setAttribute('data-memo-id', memo.id);
 
         div.innerHTML = `
-          <p style="font-size:31px;"><strong style="color: #ADD8E; font-size:25px;">From:</strong> ${memo.submitted_by}</p>
-          <p style="font-size:31px;"><strong style="color: #ADD8E; font-size:25px;">From: ${memo.department} Department</strong></p>
-          <p style="font-size:31px;"><strong style="color: #ADD8E; font-size:25px;">To:</strong> [${formatDestination(memo.destination)}] Department</p>
+          <p style="font-size:25px;"><strong style="color: #ADD8E; font-size:22px;">From:</strong> ${memo.submitted_by}</p>
+          <p style="font-size:25px;"><strong style="color: #ADD8E; font-size:22px;">From: ${memo.department} Department</strong></p>
+          <p style="font-size:25px;"><strong style="color: #ADD8E; font-size:22px;">To:</strong> [${formatDestination(memo.destination)}] Department</p>
 
           <img src="${memo.image_url}" alt="Memo Image" />
           <div class="approval-status" data-id="${memo.id}">
@@ -1071,7 +1071,7 @@ async function loadMemos() {
           </div>
 
           <hr style="border: none; height: 3px; background: linear-gradient(to right, #00f2ff, #00ffae, #00f2ff); margin: 10px 0 20px 0; border-radius: 10px;" />
-          <p style="font-size:31px;"><strong style="color: #ADD8E; font-size:25px;">Submitted on:</strong> ${memo.created_at}</p>
+          <p style="font-size:25px;"><strong style="color: #ADD8E; font-size:22px;">Submitted on:</strong> ${memo.created_at}</p>
         `;
 
         memoWrapper.appendChild(div);
@@ -1175,7 +1175,7 @@ function createStatusLine(icon, color, text) {
   return `
     <div style="display: flex; align-items: center; gap: 8px; margin-top: 10px;">
       <span style="font-size: 30px; color: ${color};">${icon}</span>
-      <span style="color: ${color}; font-size: 27px; font-family: sans-serif;">${text}</span>
+      <span style="color: ${color}; font-size: 25px; font-family: sans-serif;">${text}</span>
     </div>
   `;
 }
