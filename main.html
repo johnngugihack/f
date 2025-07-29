@@ -972,7 +972,7 @@ function renderComment(comments) {
   let visibleComments = Object.entries(comments)
     .filter(([_, comment]) => comment && comment.trim() !== '')
     .map(([dept, comment]) => {
-      return `<p style="font-size: 23px;"><strong>${dept.toUpperCase()}:</strong> ${comment}</p>`;
+      return `<p style="font-size: 20px;">${dept.toUpperCase()}: ${comment}</p>`;
     });
 
   if (visibleComments.length === 0) return '';
