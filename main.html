@@ -577,6 +577,7 @@ button:disabled {
   <option value="ICT">ICT</option>
   <option value="Engineering">Engineering</option>
   <option value="Registry">Registry</option>
+   <option value="Audit">Audit</option>
 </select>
 
 <!-- Hidden field that will carry the full path for backend -->
@@ -752,7 +753,7 @@ document.addEventListener('click', (event) => {
     // Show uploading UI
     button.disabled = true;
     button.innerHTML = `<span class="spinner" style="margin-right: 8px;"></span> <span style="color: yellow;">Uploading...</span>`;
-    statusDiv.innerHTML = `<span style="color: yellow; font-size: 35px;">Please wait while we upload your file...</span>`;
+    statusDiv.innerHTML = `<span style="color: yellow; font-size: 27px;">Please wait while we upload your file...</span>`;
 
     try {
       const res = await fetch('https://memo-locator-production.up.railway.app/upload', {
