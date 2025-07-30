@@ -1362,10 +1362,12 @@ function getFullyApprovedMemos() {
 
   const fullyApprovedMemos = allMemos.filter(memo => {
     try {
-      const destinations = JSON.parse(memo.destination); // e.g. ["ICT", "Accounts"]
+      const destinations = JSON.parse(memo.destination); // ["ICT", "HR"]
       return destinations.every(dept => {
-        const approvalKey = `${dept.toLowerCase()}_approved`;
-        return memo[approvalKey] === 1;
+        const deptLower = dept.toLowerCase();
+        return memo.approval_status.some(status =>
+          status.toLowerCase().includes(`${deptLower} approved`)
+        );
       });
     } catch (e) {
       console.error('Error parsing destination:', memo.destination, e);
@@ -1386,7 +1388,7 @@ function getFullyApprovedMemos() {
       <p><strong>Department:</strong> ${memo.department}</p>
       <p><strong>Destinations:</strong> ${memo.destination}</p>
       <p><strong>Created at:</strong> ${memo.created_at}</p>
-      <img src="${memo.image_url}" alt="Memo Image" style="max-width: 200px; margin-top: 10px;">
+      <img src="${memo.image_url}" alt="Memo Image" style="max-width: 200px;">
       <hr>
     `;
     container.appendChild(memoCard);
