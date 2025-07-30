@@ -1339,16 +1339,19 @@ function getFullyApprovedMemos() {
     return;
   }
 
+  if (allMemos.length === 0) {
+    container.innerHTML = '<p>Loading memos, please try again in a moment...</p>';
+    return;
+  }
+
   container.innerHTML = ''; // Clear previous content
 
   const fullyApprovedMemos = allMemos.filter(memo => {
     try {
-      const destinations = JSON.parse(memo.destination); // ["ICT", "HR"]
+      const destinations = JSON.parse(memo.destination);
       return destinations.every(dept => {
-        const deptLower = dept.toLowerCase(); // "ICT" → "ict"
-        return memo.approval_status.some(status =>
-          status.toLowerCase().includes(`${deptLower} approved`)
-        );
+        const field = `${dept.toLowerCase()}_approved`;
+        return memo[field] === 1;
       });
     } catch (e) {
       console.error('Error parsing destination:', memo.destination, e);
@@ -1357,7 +1360,7 @@ function getFullyApprovedMemos() {
   });
 
   if (fullyApprovedMemos.length === 0) {
-    container.innerHTML = '<p>No approved memos yet.</p>';
+    container.innerHTML = '<p>No fully approved memos yet.</p>';
     return;
   }
 
@@ -1369,7 +1372,7 @@ function getFullyApprovedMemos() {
       <p><strong>Department:</strong> ${memo.department}</p>
       <p><strong>Destinations:</strong> ${memo.destination}</p>
       <p><strong>Created at:</strong> ${memo.created_at}</p>
-      <img src="${memo.image_url}" alt="Memo Image" style="max-width: 200px;">
+      <img src="${memo.image_url}" alt="Memo Image" style="max-width: 200px;" onerror="this.style.display='none';">
       <hr>
     `;
     container.appendChild(memoCard);
