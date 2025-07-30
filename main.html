@@ -520,7 +520,9 @@ button:disabled {
       <strong >LOGOUT</strong>
     </button>
   </a>
-   <button onclick="getFullyApprovedMemos()">Show Fully Approved Memos</button>
+  <button id="approvedMemosBtn" onclick="getFullyApprovedMemos()" disabled>
+  <b>Approved Memos</b>
+</button>
 
   <button onclick="loadMemosforsidebar('Director')"><b>Memos To Director</b></button>
 
@@ -534,7 +536,9 @@ button:disabled {
   
 </div>
 
+
 <div id="fullyApprovedMemosContainer"></div>
+
 
 
 
@@ -1310,28 +1314,34 @@ function filterMemosByDepartment(dept) {
 }
 
 let memoHash = "";
-let allMemos = [];  // Store memos globally for reuse
+let allMemos = [];  // Store memos globally
 
 async function loadMemosIfChanged() {
   try {
     const res = await fetch('https://memo-locator-production.up.railway.app/view');
     const data = await res.json();
+
     const newHash = JSON.stringify(data.data.map(m => m.id + m.approval_status.join(',')));
 
     if (newHash !== memoHash) {
       memoHash = newHash;
-
-      allMemos = data.data; // Save memos globally
+      allMemos = data.data;
 
       const scrollY = window.scrollY;
-      await loadMemos();  // Re-render main memos
+      await loadMemos(); // You can replace this with your memo rendering function
       window.scrollTo(0, scrollY);
     }
+
+    // ✅ Enable the approved memos button once memos are loaded
+    const approvedBtn = document.getElementById('approvedMemosBtn');
+    if (approvedBtn) approvedBtn.disabled = false;
+
   } catch (err) {
-    console.error('Conditional memo refresh failed', err);
+    console.error('Failed to fetch memos:', err);
   }
 }
 
+// ✅ Fully approved memo viewer
 function getFullyApprovedMemos() {
   const container = document.getElementById('fullyApprovedMemosContainer');
   if (!container) {
@@ -1339,22 +1349,22 @@ function getFullyApprovedMemos() {
     return;
   }
 
+  container.innerHTML = ''; // Clear previous content
+
   if (allMemos.length === 0) {
     container.innerHTML = '<p>Loading memos, please try again in a moment...</p>';
     return;
   }
 
-  container.innerHTML = ''; // Clear previous content
-
   const fullyApprovedMemos = allMemos.filter(memo => {
     try {
-      const destinations = JSON.parse(memo.destination);
+      const destinations = JSON.parse(memo.destination); // e.g., ["ICT", "Accounts"]
       return destinations.every(dept => {
-        const field = `${dept.toLowerCase()}_approved`;
-        return memo[field] === 1;
+        const key = `${dept.toLowerCase()}_approved`;
+        return memo[key] === 1;
       });
     } catch (e) {
-      console.error('Error parsing destination:', memo.destination, e);
+      console.warn('Error parsing destinations for memo ID', memo.id, e);
       return false;
     }
   });
@@ -1367,17 +1377,28 @@ function getFullyApprovedMemos() {
   fullyApprovedMemos.forEach(memo => {
     const memoCard = document.createElement('div');
     memoCard.className = 'memo-card';
+    memoCard.style.border = '1px solid #ccc';
+    memoCard.style.padding = '10px';
+    memoCard.style.marginBottom = '15px';
+    memoCard.style.borderRadius = '10px';
+    memoCard.style.background = '#f9f9f9';
+
     memoCard.innerHTML = `
       <p><strong>Submitted by:</strong> ${memo.submitted_by}</p>
       <p><strong>Department:</strong> ${memo.department}</p>
       <p><strong>Destinations:</strong> ${memo.destination}</p>
       <p><strong>Created at:</strong> ${memo.created_at}</p>
       <img src="${memo.image_url}" alt="Memo Image" style="max-width: 200px;" onerror="this.style.display='none';">
-      <hr>
     `;
+
     container.appendChild(memoCard);
   });
 }
+
+// ✅ Load on page ready
+document.addEventListener('DOMContentLoaded', () => {
+  loadMemosIfChanged();
+});
 
 
 
