@@ -520,7 +520,7 @@ button:disabled {
       <strong >LOGOUT</strong>
     </button>
   </a>
-   <button onclick="getFullyApprovedMemos()"><b>Approved Memos</b></button>
+   <button onclick="getFullyApprovedMemos()">Show Fully Approved Memos</button>
 
   <button onclick="loadMemosforsidebar('Director')"><b>Memos To Director</b></button>
 
@@ -533,21 +533,8 @@ button:disabled {
   <button onclick="loadMemosforsidebar('Registry')"><b>Memos To Registry</b></button>
   
 </div>
-<div id="fullyApprovedMemosContainer" style="
-  position: fixed;
-  top: 80px;
-  right: 20px;
-  width: 400px;
-  max-height: 90vh;
-  overflow-y: auto;
-  background: grey;
-  border: 2px solid #ccc;
-  border-radius: 12px;
-  box-shadow: 0 0 15px rgba(0,0,0,0.3);
-  padding: 20px;
-  z-index: 30000;
-  display: none;
-"></div>
+
+<div id="fullyApprovedMemosContainer"></div>
 
 
 
