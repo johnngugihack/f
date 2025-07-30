@@ -1302,22 +1302,22 @@ function filterMemosByDepartment(dept) {
   });
 }
 
-let currentHash = "";
-let allMemos = []; // Global memo cache
+let memoHash = "";
+let allMemos = [];  // Store memos globally for reuse
 
 async function loadMemosIfChanged() {
   try {
     const res = await fetch('https://memo-locator-production.up.railway.app/view');
     const data = await res.json();
-
     const newHash = JSON.stringify(data.data.map(m => m.id + m.approval_status.join(',')));
 
-    if (newHash !== currentHash) {
-      currentHash = newHash;
-      allMemos = data.data;
+    if (newHash !== memoHash) {
+      memoHash = newHash;
+
+      allMemos = data.data; // Save memos globally
 
       const scrollY = window.scrollY;
-      await loadMemos();
+      await loadMemos();  // Re-render main memos
       window.scrollTo(0, scrollY);
     }
   } catch (err) {
