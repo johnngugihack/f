@@ -1327,27 +1327,19 @@ async function loadMemosIfChanged() {
 }
 
 function getFullyApprovedMemos() {
-  if (!Array.isArray(allMemos)) return;
-
   const approved = allMemos.filter(memo => {
     try {
       const destinations = JSON.parse(memo.destination);
-
       return destinations.every(dept => {
         const key = `${dept.toLowerCase()}_approved`;
         return memo[key] === 1;
       });
-    } catch (e) {
+    } catch {
       return false;
     }
   });
 
   const container = document.getElementById("approvedMemosList");
-  if (!container) {
-    console.error("Missing element with id 'approvedMemosList'");
-    return;
-  }
-
   container.innerHTML = approved.length
     ? approved.map(memo => `
       <div class="memo">
@@ -1356,7 +1348,7 @@ function getFullyApprovedMemos() {
         <strong>Created:</strong> ${memo.created_at}<br>
       </div><hr>
     `).join("")
-    : "<p>No fully approved memos yet.</p>";
+    : "<p>No approved memos yet.</p>";
 }
 
 
