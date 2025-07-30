@@ -1330,24 +1330,27 @@ function getFullyApprovedMemos() {
   const approved = allMemos.filter(memo => {
     try {
       const destinations = JSON.parse(memo.destination);
+
+      // Check that each destination department's approval field is 1
       return destinations.every(dept => {
         const key = `${dept.toLowerCase()}_approved`;
         return memo[key] === 1;
       });
-    } catch {
+    } catch (e) {
       return false;
     }
   });
 
   const container = document.getElementById("approvedMemosList");
+
   container.innerHTML = approved.length
     ? approved.map(memo => `
-      <div class="memo">
-        <strong>From:</strong> ${memo.submitted_by} (${memo.department})<br>
-        <strong>To:</strong> ${memo.destination}<br>
-        <strong>Created:</strong> ${memo.created_at}<br>
-      </div><hr>
-    `).join("")
+        <div class="memo">
+          <strong>From:</strong> ${memo.submitted_by} (${memo.department})<br>
+          <strong>To:</strong> ${memo.destination}<br>
+          <strong>Created:</strong> ${memo.created_at}<br>
+        </div><hr>
+      `).join("")
     : "<p>No approved memos yet.</p>";
 }
 
