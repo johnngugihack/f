@@ -1303,27 +1303,51 @@ function filterMemosByDepartment(dept) {
 }
 
 let currentHash = "";
-let allMemos = [];  // <-- Store memos globally for reuse (e.g. for approved memos)
+let allMemos = []; // Global memo cache
 
-
-  async function loadMemosIfChanged() {
+async function loadMemosIfChanged() {
   try {
     const res = await fetch('https://memo-locator-production.up.railway.app/view');
     const data = await res.json();
+
     const newHash = JSON.stringify(data.data.map(m => m.id + m.approval_status.join(',')));
 
     if (newHash !== currentHash) {
       currentHash = newHash;
-
-      allMemos = data.data; // ✅ Save memos globally
+      allMemos = data.data;
 
       const scrollY = window.scrollY;
-      await loadMemos();  // Re-render main memos
+      await loadMemos();
       window.scrollTo(0, scrollY);
     }
   } catch (err) {
     console.error('Conditional memo refresh failed', err);
   }
+}
+
+function getFullyApprovedMemos() {
+  const approved = allMemos.filter(memo => {
+    try {
+      const destinations = JSON.parse(memo.destination);
+      return destinations.every(dept => {
+        const key = `${dept.toLowerCase()}_approved`;
+        return memo[key] === 1;
+      });
+    } catch {
+      return false;
+    }
+  });
+
+  const container = document.getElementById("approvedMemosList");
+  container.innerHTML = approved.length
+    ? approved.map(memo => `
+      <div class="memo">
+        <strong>From:</strong> ${memo.submitted_by} (${memo.department})<br>
+        <strong>To:</strong> ${memo.destination}<br>
+        <strong>Created:</strong> ${memo.created_at}<br>
+      </div><hr>
+    `).join("")
+    : "<p>No approved memos yet.</p>";
 }
 
 
