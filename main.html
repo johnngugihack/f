@@ -1088,7 +1088,7 @@ async function loadMemos() {
           </div>
 
           <hr style="border: none; height: 3px; background: linear-gradient(to right, #00f2ff, #00ffae, #00f2ff); margin: 10px 0 20px 0; border-radius: 10px;" />
-          <p style="font-size:25px;"><strong style="color: #ADD8E; font-size:20px;">Submitted on:</strong> ${memo.created_at}</p>
+          <p style="font-size:22px;"><strong style="color: #ADD8E; font-size:20px;">Submitted on:</strong> ${memo.created_at}</p>
         `;
 
         memoWrapper.appendChild(div);
@@ -1191,8 +1191,8 @@ function generateApprovalStatusHTML(statusList, destination, overallStatus = "")
 function createStatusLine(icon, color, text) {
   return `
     <div style="display: flex; align-items: center; gap: 8px; margin-top: 10px;">
-      <span style="font-size: 23px; color: ${color};">${icon}</span>
-      <span style="color: ${color}; font-size: 25px; font-family: sans-serif;">${text}</span>
+      <span style="font-size: 21px; color: ${color};">${icon}</span>
+      <span style="color: ${color}; font-size: 21px; font-family: sans-serif;">${text}</span>
     </div>
   `;
 }
@@ -1418,9 +1418,9 @@ async function showMemosInModal(destination, memos) {
     div.className = 'memo';
 
     div.innerHTML = `
-      <p style="font-size:34px;"><strong>From:</strong> ${memo.submitted_by}</p>
-      <p style="font-size:34px;"><strong>Department:</strong> ${memo.department} Department</p>
-      <p style="font-size:34px;"><strong>To:</strong> [${formatDestination(memo.destination)}] Department</p>
+      <p style="font-size:20px;"><strong>From:</strong> ${memo.submitted_by}</p>
+      <p style="font-size:20px;"><strong>Department:</strong> ${memo.department} Department</p>
+      <p style="font-size:20px;"><strong>To:</strong> [${formatDestination(memo.destination)}] Department</p>
 
       <img src="${memo.image_url}" alt="Memo Image" style="max-width:100%; border-radius:8px; margin:10px 0;" />
       <div class="approval-status" data-id="${memo.id}">
@@ -1428,11 +1428,11 @@ async function showMemosInModal(destination, memos) {
         ${renderComment(memo.comments)}
       </div>
 
-      <div style="margin-top: 10px;">
+      <div style="margin-top: 7px;">
         ${generateApprovalButtons(memo)}
       </div>
       <hr />
-      <p style="font-size:34px;"><strong>Submitted on:</strong> ${memo.created_at}</p>
+      <p style="font-size:20px;"><strong>Submitted on:</strong> ${memo.created_at}</p>
     `;
 
     memoWrapper.appendChild(div);
