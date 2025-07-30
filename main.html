@@ -539,7 +539,22 @@ button:disabled {
   <button onclick="loadMemosforsidebar('Registry')"><b>Memos To Registry</b></button>
   
 </div>
-<div id="approvedMemosPanel" style="display: none; padding: 20px;"></div>
+<div id="approvedMemosPanel" style="
+  display: none;
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  width: 400px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: white;
+  border: 2px solid #ccc;
+  border-radius: 12px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.3);
+  padding: 20px;
+  z-index: 30000;
+"></div>
+
 
 
 
@@ -1351,21 +1366,25 @@ function getFullyApprovedMemos() {
   });
 
   const container = document.getElementById("approvedMemosPanel");
-  container.style.display = "block"; // show the panel
+  container.style.display = "block"; // Make it visible
 
   if (approved.length === 0) {
     container.innerHTML = "<p>No approved memos yet.</p>";
     return;
   }
 
-  container.innerHTML = approved.map(memo => `
-    <div class="memo" style="margin-bottom: 20px; padding: 15px; border: 1px solid #ccc; border-radius: 10px;">
-      <strong>From:</strong> ${memo.submitted_by} (${memo.department})<br>
-      <strong>To:</strong> ${memo.destination}<br>
-      <strong>Created:</strong> ${memo.created_at}<br>
-      <img src="${memo.image_url}" alt="Memo Image" style="max-width: 100%; margin-top: 10px; border-radius: 8px;">
-    </div>
-  `).join("");
+  container.innerHTML = `
+    <h2>Fully Approved Memos</h2>
+    ${approved.map(memo => `
+      <div class="memo" style="border-bottom: 1px solid #ccc; margin-bottom: 20px; padding-bottom: 10px;">
+        <strong>Submitted by:</strong> ${memo.submitted_by}<br>
+        <strong>Department:</strong> ${memo.department}<br>
+        <strong>Destination(s):</strong> ${memo.destination}<br>
+        <strong>Created:</strong> ${memo.created_at}<br>
+        <img src="${memo.image_url}" alt="Memo Image" style="max-width: 300px; display: block; margin-top: 10px;">
+      </div>
+    `).join("")}
+  `;
 }
 
 
