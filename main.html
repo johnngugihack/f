@@ -1353,38 +1353,42 @@ async function loadMemosIfChanged() {
 function getFullyApprovedMemos() {
   const approved = allMemos.filter(memo => {
     try {
-      const destinations = JSON.parse(memo.destination);
+      const destinations = JSON.parse(memo.destination);  // e.g., ["ICT", "Accounts"]
       return destinations.every(dept => {
-        const deptLower = dept.toLowerCase();
-        return memo.approval_status.some(status =>
-          status.toLowerCase().includes(`${deptLower} approved`)
-        );
+        const key = `${dept.toLowerCase()}_approved`;
+        return memo[key] === 1;
       });
-    } catch {
+    } catch (e) {
       return false;
     }
   });
 
-  const container = document.getElementById("approvedMemosPanel");
-  container.style.display = "block"; // Make it visible
-
-  if (approved.length === 0) {
-    container.innerHTML = "<p>No approved memos yet.</p>";
+  const panel = document.getElementById("approvedMemosPanel");
+  if (!panel) {
+    console.error("approvedMemosPanel not found in DOM.");
     return;
   }
 
-  container.innerHTML = `
-    <h2>Fully Approved Memos</h2>
-    ${approved.map(memo => `
-      <div class="memo" style="border-bottom: 1px solid #ccc; margin-bottom: 20px; padding-bottom: 10px;">
-        <strong>Submitted by:</strong> ${memo.submitted_by}<br>
-        <strong>Department:</strong> ${memo.department}<br>
-        <strong>Destination(s):</strong> ${memo.destination}<br>
-        <strong>Created:</strong> ${memo.created_at}<br>
-        <img src="${memo.image_url}" alt="Memo Image" style="max-width: 300px; display: block; margin-top: 10px;">
-      </div>
-    `).join("")}
-  `;
+  panel.innerHTML = `<h3>Fully Approved Memos</h3>`;
+
+  if (approved.length === 0) {
+    panel.innerHTML += `<p>No approved memos yet.</p>`;
+  } else {
+    approved.forEach(memo => {
+      panel.innerHTML += `
+        <div class="memo">
+          <strong>From:</strong> ${memo.submitted_by} (${memo.department})<br>
+          <strong>To:</strong> ${memo.destination}<br>
+          <strong>Created:</strong> ${memo.created_at}<br>
+          <img src="${memo.image_url}" alt="Memo" style="max-width: 100%; margin-top: 10px;">
+        </div>
+        <hr>
+      `;
+    });
+  }
+
+  // Show the panel
+  panel.style.display = "block";
 }
 
 
