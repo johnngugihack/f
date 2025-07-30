@@ -1360,40 +1360,38 @@ function getFullyApprovedMemos() {
 
   container.innerHTML = ''; // Clear previous content
 
-  const fullyApprovedMemos = allMemos.filter(memo => {
+  const approvedMemos = allMemos.filter(memo => {
     try {
-      const destinations = JSON.parse(memo.destination); // ["ICT", "HR"]
+      const destinations = JSON.parse(memo.destination); // e.g. ["ICT", "HR"]
       return destinations.every(dept => {
-        const deptLower = dept.toLowerCase();
-        return memo.approval_status.some(status =>
-          status.toLowerCase().includes(`${deptLower} approved`)
-        );
+        const field = `${dept.toLowerCase()}_approved`;
+        return memo[field] === 1; // Check that each destination is approved
       });
     } catch (e) {
-      console.error('Error parsing destination:', memo.destination, e);
+      console.error('Invalid destination JSON:', memo.destination);
       return false;
     }
   });
 
-  if (fullyApprovedMemos.length === 0) {
-    container.innerHTML = '<p>No approved memos yet.</p>';
+  if (approvedMemos.length === 0) {
+    container.innerHTML = '<p>No fully approved memos found.</p>';
     return;
   }
 
-  fullyApprovedMemos.forEach(memo => {
+  approvedMemos.forEach(memo => {
     const memoCard = document.createElement('div');
     memoCard.className = 'memo-card';
     memoCard.innerHTML = `
-      <p><strong>Submitted by:</strong> ${memo.submitted_by}</p>
-      <p><strong>Department:</strong> ${memo.department}</p>
-      <p><strong>Destinations:</strong> ${memo.destination}</p>
-      <p><strong>Created at:</strong> ${memo.created_at}</p>
-      <img src="${memo.image_url}" alt="Memo Image" style="max-width: 200px;">
+      <p><strong>From:</strong> ${memo.submitted_by} (${memo.department})</p>
+      <p><strong>To:</strong> ${JSON.parse(memo.destination).join(', ')}</p>
+      <p><strong>Date:</strong> ${memo.created_at}</p>
+      <img src="${memo.image_url}" alt="Memo Image" onerror="this.style.display='none';">
       <hr>
     `;
     container.appendChild(memoCard);
   });
 }
+
 
 
 
