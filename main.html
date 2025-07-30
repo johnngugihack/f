@@ -539,8 +539,7 @@ button:disabled {
   <button onclick="loadMemosforsidebar('Registry')"><b>Memos To Registry</b></button>
   
 </div>
-<div id="approvedMemosPanel" style="
-  display: none;
+<div id="fullyApprovedMemosContainer" style="
   position: fixed;
   top: 80px;
   right: 20px;
@@ -553,7 +552,9 @@ button:disabled {
   box-shadow: 0 0 15px rgba(0,0,0,0.3);
   padding: 20px;
   z-index: 30000;
+  display: none;
 "></div>
+
 
 
 
@@ -1351,44 +1352,45 @@ async function loadMemosIfChanged() {
 }
 
 function getFullyApprovedMemos() {
-  const approved = allMemos.filter(memo => {
+  const container = document.getElementById('fullyApprovedMemosContainer');
+  if (!container) {
+    console.error('Container not found');
+    return;
+  }
+
+  container.innerHTML = ''; // Clear previous content
+
+  const fullyApprovedMemos = allMemos.filter(memo => {
     try {
-      const destinations = JSON.parse(memo.destination);  // e.g., ["ICT", "Accounts"]
+      const destinations = JSON.parse(memo.destination); // e.g. ["ICT", "Accounts"]
       return destinations.every(dept => {
-        const key = `${dept.toLowerCase()}_approved`;
-        return memo[key] === 1;
+        const approvalKey = `${dept.toLowerCase()}_approved`;
+        return memo[approvalKey] === 1;
       });
     } catch (e) {
+      console.error('Error parsing destination:', memo.destination, e);
       return false;
     }
   });
 
-  const panel = document.getElementById("approvedMemosPanel");
-  if (!panel) {
-    console.error("approvedMemosPanel not found in DOM.");
+  if (fullyApprovedMemos.length === 0) {
+    container.innerHTML = '<p>No approved memos yet.</p>';
     return;
   }
 
-  panel.innerHTML = `<h3>Fully Approved Memos</h3>`;
-
-  if (approved.length === 0) {
-    panel.innerHTML += `<p>No approved memos yet.</p>`;
-  } else {
-    approved.forEach(memo => {
-      panel.innerHTML += `
-        <div class="memo">
-          <strong>From:</strong> ${memo.submitted_by} (${memo.department})<br>
-          <strong>To:</strong> ${memo.destination}<br>
-          <strong>Created:</strong> ${memo.created_at}<br>
-          <img src="${memo.image_url}" alt="Memo" style="max-width: 100%; margin-top: 10px;">
-        </div>
-        <hr>
-      `;
-    });
-  }
-
-  // Show the panel
-  panel.style.display = "block";
+  fullyApprovedMemos.forEach(memo => {
+    const memoCard = document.createElement('div');
+    memoCard.className = 'memo-card';
+    memoCard.innerHTML = `
+      <p><strong>Submitted by:</strong> ${memo.submitted_by}</p>
+      <p><strong>Department:</strong> ${memo.department}</p>
+      <p><strong>Destinations:</strong> ${memo.destination}</p>
+      <p><strong>Created at:</strong> ${memo.created_at}</p>
+      <img src="${memo.image_url}" alt="Memo Image" style="max-width: 200px; margin-top: 10px;">
+      <hr>
+    `;
+    container.appendChild(memoCard);
+  });
 }
 
 
