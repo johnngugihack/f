@@ -1029,14 +1029,14 @@ async function loadMemos() {
       const buttonWrapper = document.createElement('div');
       buttonWrapper.style.position = 'relative';
       buttonWrapper.style.display = 'inline-block';
-      buttonWrapper.style.margin = '10px';
+      buttonWrapper.style.margin = '7px';
       buttonWrapper.style.textAlign = 'center';
 
       const button = document.createElement('button');
       button.textContent = dept.toUpperCase();
       button.className = 'filter-button';
       button.setAttribute('data-department', dept);
-      button.style.fontSize = '1.2rem';
+      button.style.fontSize = '1.0rem';
       button.style.color = 'black';
       button.style.fontWeight = '600';
       if (dept === currentDepartment) button.classList.add('active');
@@ -1073,9 +1073,9 @@ async function loadMemos() {
         div.setAttribute('data-memo-id', memo.id);
 
         div.innerHTML = `
-          <p style="font-size:25px;"><strong style="color: #ADD8E; font-size:22px;">From:</strong> ${memo.submitted_by}</p>
-          <p style="font-size:25px;"><strong style="color: #ADD8E; font-size:22px;">From: ${memo.department} Department</strong></p>
-          <p style="font-size:25px;"><strong style="color: #ADD8E; font-size:22px;">To:</strong> [${formatDestination(memo.destination)}] Department</p>
+          <p style="font-size:22px;"><strong style="color: #ADD8E; font-size:20px;">From:</strong> ${memo.submitted_by}</p>
+          <p style="font-size:22px;"><strong style="color: #ADD8E; font-size:20px;">From: ${memo.department} Department</strong></p>
+          <p style="font-size:22px;"><strong style="color: #ADD8E; font-size:20px;">To:</strong> [${formatDestination(memo.destination)}] Department</p>
 
           <img src="${memo.image_url}" alt="Memo Image" />
           <div class="approval-status" data-id="${memo.id}">
@@ -1083,12 +1083,12 @@ async function loadMemos() {
             ${renderComment(memo.comments)}
           </div>
 
-          <div style="margin-top: 10px; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
+          <div style="margin-top: 10px; display: flex; gap: 7px; flex-wrap: wrap; justify-content: center;">
             ${generateApprovalButtons(memo)}
           </div>
 
           <hr style="border: none; height: 3px; background: linear-gradient(to right, #00f2ff, #00ffae, #00f2ff); margin: 10px 0 20px 0; border-radius: 10px;" />
-          <p style="font-size:25px;"><strong style="color: #ADD8E; font-size:22px;">Submitted on:</strong> ${memo.created_at}</p>
+          <p style="font-size:25px;"><strong style="color: #ADD8E; font-size:20px;">Submitted on:</strong> ${memo.created_at}</p>
         `;
 
         memoWrapper.appendChild(div);
