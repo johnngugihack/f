@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -612,7 +613,7 @@ button:disabled {
   </section>
 
  <script>
-function getRoleFromToken(token) {
+function getRoleFromTokenn(token) {
   try {
     const payload = JSON.parse(atob(token.split('.')[1]));
     return payload.role; // adjust if role is nested
@@ -621,8 +622,9 @@ function getRoleFromToken(token) {
   }
 }
 
+
 const token = sessionStorage.getItem('token');
-const role = token ? getRoleFromToken(token) : null;
+const role = token ? getRoleFromTokenn(token) : null;
 
 const fileInput = document.getElementById('fileInput');
 
@@ -921,14 +923,28 @@ function getRoleFromToken() {
     return null;
   }
 }
+function getVoteFromToken() {
+  const token = sessionStorage.getItem('token');
+  if (!token) return null;
+
+  try {
+    const payloadBase64 = token.split('.')[1];
+    const payloadJson = atob(payloadBase64); // Decode base64
+    const payload = JSON.parse(payloadJson);
+    return payload.vote ?? null; // could be 0 or 1
+  } catch (e) {
+    console.error("Failed to decode token:", e);
+    return null;
+  }
+}
 
 
 function generateApprovalButtons(memo) {
   const role = getRoleFromToken();
+  const vote = getVoteFromToken();
 
-  if (!role) return;
+  if (!role || vote !== 1) return ''; // ⛔️ Don't show anything if not allowed to vote
 
-  // Properly parse the destination JSON string
   let destinations = [];
   try {
     destinations = JSON.parse(memo.destination || '[]').map(d => d.toLowerCase());
@@ -939,17 +955,18 @@ function generateApprovalButtons(memo) {
   let buttonsHTML = '';
 
   function createBox(dept) {
-    const isActive = role === dept;
+    const userIsInDept = role === dept;
+    if (!userIsInDept) return ''; // ⛔️ Only show button for the logged-in role
+
     return `
       <div class="approval-box">
         <div class="box-title" style="font-size: 1.2rem; font-weight: bold;">${capitalize(dept)} Approval</div>
-      <button onclick="approveMemo(${memo.id}, '${dept}')" ${isActive ? '' : 'disabled'} style="font-size: 18px; font-weight: bold;">
-	  ${capitalize(dept)} Approve
-       </button>
-        ${isActive ? `<button class="reject-btn" onclick="rejectMemo(${memo.id}, '${dept}')"
-          style="font-size: 18px; font-weight: bold; padding: 10px 16px;">
+        <button onclick="approveMemo(${memo.id}, '${dept}')" style="font-size: 18px; font-weight: bold;">
+          ${capitalize(dept)} Approve
+        </button>
+        <button class="reject-btn" onclick="rejectMemo(${memo.id}, '${dept}')" style="font-size: 18px; font-weight: bold; padding: 10px 16px;">
           ${capitalize(dept)} Decline
-        </button>` : ''}
+        </button>
       </div>
     `;
   }
