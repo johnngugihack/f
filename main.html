@@ -1313,31 +1313,28 @@ function filterMemosByDepartment(dept) {
   });
 }
 
+let allMemos = [];
 let memoHash = "";
-let allMemos = [];  // Store memos globally
+let memosLoaded = false; // ✅ Flag to track when loading is done
 
 async function loadMemosIfChanged() {
   try {
     const res = await fetch('https://memo-locator-production.up.railway.app/view');
     const data = await res.json();
-
     const newHash = JSON.stringify(data.data.map(m => m.id + m.approval_status.join(',')));
 
     if (newHash !== memoHash) {
       memoHash = newHash;
       allMemos = data.data;
+      memosLoaded = true; // ✅ Mark as loaded
 
       const scrollY = window.scrollY;
-      await loadMemos(); // You can replace this with your memo rendering function
+      await loadMemos();
       window.scrollTo(0, scrollY);
     }
-
-    // ✅ Enable the approved memos button once memos are loaded
-    const approvedBtn = document.getElementById('approvedMemosBtn');
-    if (approvedBtn) approvedBtn.disabled = false;
-
   } catch (err) {
-    console.error('Failed to fetch memos:', err);
+    console.error('Conditional memo refresh failed', err);
+    memosLoaded = false;
   }
 }
 
@@ -1349,22 +1346,22 @@ function getFullyApprovedMemos() {
     return;
   }
 
-  container.innerHTML = ''; // Clear old content
+  container.innerHTML = '';
 
-  if (allMemos.length === 0) {
+  if (!memosLoaded || allMemos.length === 0) {
     container.innerHTML = '<p>Loading memos, please try again in a moment...</p>';
     return;
   }
 
   const fullyApprovedMemos = allMemos.filter(memo => {
     try {
-      const destinations = JSON.parse(memo.destination); // e.g. ["ICT", "Accounts"]
+      const destinations = JSON.parse(memo.destination);
       return destinations.every(dept => {
         const key = `${dept.toLowerCase()}_approved`;
         return memo[key] === 1;
       });
     } catch (e) {
-      console.warn(`Failed to parse destination for memo ID ${memo.id}:`, e);
+      console.warn(`Error parsing destination for memo ID ${memo.id}:`, e);
       return false;
     }
   });
@@ -1377,12 +1374,6 @@ function getFullyApprovedMemos() {
   fullyApprovedMemos.forEach(memo => {
     const memoCard = document.createElement('div');
     memoCard.className = 'memo-card';
-    memoCard.style.border = '1px solid #ccc';
-    memoCard.style.padding = '12px';
-    memoCard.style.margin = '10px 0';
-    memoCard.style.borderRadius = '12px';
-    memoCard.style.background = '#f4f4f4';
-
     memoCard.innerHTML = `
       <p><strong>Submitted by:</strong> ${memo.submitted_by}</p>
       <p><strong>Department:</strong> ${memo.department}</p>
@@ -1390,7 +1381,6 @@ function getFullyApprovedMemos() {
       <p><strong>Created at:</strong> ${memo.created_at}</p>
       <img src="${memo.image_url}" alt="Memo Image" style="max-width: 200px; margin-top: 10px;" onerror="this.style.display='none';">
     `;
-
     container.appendChild(memoCard);
   });
 }
