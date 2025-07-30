@@ -1328,47 +1328,66 @@ async function loadMemosIfChanged() {
 }
 
 function getFullyApprovedMemos() {
-  const container = document.getElementById('fullyApprovedMemosContainer');
-  if (!container) {
-    console.error('Container not found');
-    return;
-  }
-
-  container.innerHTML = ''; // Clear previous content
-
-  const fullyApprovedMemos = allMemos.filter(memo => {
+  const approved = allMemos.filter(memo => {
     try {
-      const destinations = JSON.parse(memo.destination); // ["ICT", "HR"]
+      const destinations = JSON.parse(memo.destination);
       return destinations.every(dept => {
-        const deptLower = dept.toLowerCase(); // "ICT" → "ict"
+        const deptLower = dept.toLowerCase();
         return memo.approval_status.some(status =>
           status.toLowerCase().includes(`${deptLower} approved`)
         );
       });
-    } catch (e) {
-      console.error('Error parsing destination:', memo.destination, e);
+    } catch {
       return false;
     }
   });
 
-  if (fullyApprovedMemos.length === 0) {
-    container.innerHTML = '<p>No approved memos yet.</p>';
+  // Create new popup window
+  const win = window.open('', 'Approved Memos', 'width=800,height=600,scrollbars=yes');
+
+  if (!win) {
+    alert('Popup blocked. Please allow popups for this site.');
     return;
   }
 
-  fullyApprovedMemos.forEach(memo => {
-    const memoCard = document.createElement('div');
-    memoCard.className = 'memo-card';
-    memoCard.innerHTML = `
-      <p><strong>Submitted by:</strong> ${memo.submitted_by}</p>
-      <p><strong>Department:</strong> ${memo.department}</p>
-      <p><strong>Destinations:</strong> ${memo.destination}</p>
-      <p><strong>Created at:</strong> ${memo.created_at}</p>
-      <img src="${memo.image_url}" alt="Memo Image" style="max-width: 200px;">
-      <hr>
-    `;
-    container.appendChild(memoCard);
-  });
+  // Build HTML content
+  let html = `
+    <html>
+    <head>
+      <title>Approved Memos</title>
+      <style>
+        body { font-family: Arial; padding: 20px; }
+        .memo { border-bottom: 1px solid #ccc; margin-bottom: 20px; padding-bottom: 10px; }
+        img { max-width: 300px; display: block; margin-top: 10px; }
+      </style>
+    </head>
+    <body>
+      <h2>Fully Approved Memos</h2>
+  `;
+
+  if (approved.length === 0) {
+    html += '<p>No approved memos yet.</p>';
+  } else {
+    approved.forEach(memo => {
+      html += `
+        <div class="memo">
+          <strong>Submitted by:</strong> ${memo.submitted_by}<br>
+          <strong>Department:</strong> ${memo.department}<br>
+          <strong>Destination(s):</strong> ${memo.destination}<br>
+          <strong>Created:</strong> ${memo.created_at}<br>
+          <img src="${memo.image_url}" alt="Memo Image">
+        </div>
+      `;
+    });
+  }
+
+  html += `
+    </body>
+    </html>
+  `;
+
+  win.document.write(html);
+  win.document.close();
 }
 
 
