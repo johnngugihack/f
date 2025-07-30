@@ -1349,7 +1349,7 @@ function getFullyApprovedMemos() {
     return;
   }
 
-  container.innerHTML = ''; // Clear previous content
+  container.innerHTML = ''; // Clear old content
 
   if (allMemos.length === 0) {
     container.innerHTML = '<p>Loading memos, please try again in a moment...</p>';
@@ -1358,13 +1358,13 @@ function getFullyApprovedMemos() {
 
   const fullyApprovedMemos = allMemos.filter(memo => {
     try {
-      const destinations = JSON.parse(memo.destination); // e.g., ["ICT", "Accounts"]
+      const destinations = JSON.parse(memo.destination); // e.g. ["ICT", "Accounts"]
       return destinations.every(dept => {
         const key = `${dept.toLowerCase()}_approved`;
         return memo[key] === 1;
       });
     } catch (e) {
-      console.warn('Error parsing destinations for memo ID', memo.id, e);
+      console.warn(`Failed to parse destination for memo ID ${memo.id}:`, e);
       return false;
     }
   });
@@ -1378,28 +1378,22 @@ function getFullyApprovedMemos() {
     const memoCard = document.createElement('div');
     memoCard.className = 'memo-card';
     memoCard.style.border = '1px solid #ccc';
-    memoCard.style.padding = '10px';
-    memoCard.style.marginBottom = '15px';
-    memoCard.style.borderRadius = '10px';
-    memoCard.style.background = '#f9f9f9';
+    memoCard.style.padding = '12px';
+    memoCard.style.margin = '10px 0';
+    memoCard.style.borderRadius = '12px';
+    memoCard.style.background = '#f4f4f4';
 
     memoCard.innerHTML = `
       <p><strong>Submitted by:</strong> ${memo.submitted_by}</p>
       <p><strong>Department:</strong> ${memo.department}</p>
       <p><strong>Destinations:</strong> ${memo.destination}</p>
       <p><strong>Created at:</strong> ${memo.created_at}</p>
-      <img src="${memo.image_url}" alt="Memo Image" style="max-width: 200px;" onerror="this.style.display='none';">
+      <img src="${memo.image_url}" alt="Memo Image" style="max-width: 200px; margin-top: 10px;" onerror="this.style.display='none';">
     `;
 
     container.appendChild(memoCard);
   });
 }
-
-// ✅ Load on page ready
-document.addEventListener('DOMContentLoaded', () => {
-  loadMemosIfChanged();
-});
-
 
 
 
