@@ -523,7 +523,7 @@ button:disabled {
   <button id="approvedMemosBtn" onclick="getFullyApprovedMemos()">
   <b>Approved Memos</b>
 </button>
-    <button onclick="resetFileInput()">🔄</button>
+   
   <button onclick="loadMemosforsidebar('Director')"><b>Memos To Director</b></button>
 
   <button onclick="loadMemosforsidebar('Hr')"><b>Memos To HR</b></button>
@@ -576,7 +576,7 @@ button:disabled {
     <h2 style="width: 95%;  margin-left:-15px; border-radius: 10px;">Approval Workflow Center</h2>
     <input  type="text" name="department" placeholder="Department..." class="personin" required />
     <input  type="text" name="person" placeholder="Submitted by..." class="personin" required />
-  
+    
 
 
 
@@ -604,7 +604,10 @@ button:disabled {
 </select>
 
 
-    <input type="file" id="fileInput" name="memo" accept="image/*" class="image" required />
+    <div style="display: flex; align-items: center; gap: 10px; margin-top: 10px;">
+  <input type="file" id="fileInput" name="memo" accept="image/*" class="image" required />
+  <button type="button" onclick="resetFileInput()" title="Reset file input" style="background: none; border: none; font-size: 20px; cursor: pointer;">🔄</button>
+</div>
     <button type="submit" id="uploadBtn" style="font-size:26px"><b>UPLOAD</b></button>
   </form>
 <div id="uploadStatus" style="margin-top: 10px;"></div>
